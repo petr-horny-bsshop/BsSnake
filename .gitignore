@@ -1,0 +1,18 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/BsSnake
+/BsSnake.Contracts/bin
+/BsSnake.Contracts/obj
+/BsSnake.Core/bin
+/BsSnake.Core/obj
+/BsSnake.Rcl/bin
+/BsSnake.Rcl/obj
+/BsSnake.Server/.config
+/BsSnake.Server/bin
+/BsSnake.Server/obj
+/BsSnake.Server/Properties/PublishProfiles/FolderProfile.pubxml.user
+/BsSnake.Server/BsSnake.Server.csproj.user
+/BsSnake.SnakeExample/bin/Debug/net7.0
+/BsSnake.SnakeExample/obj
