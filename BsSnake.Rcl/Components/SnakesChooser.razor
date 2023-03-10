@@ -1,0 +1,40 @@
+﻿@using BsSnake.Core.Model
+
+<RadzenCheckBoxList @bind-Value="@_selectedSnakes" @bind-Value:after="OnSelectedSnakesChanged" TValue="SnakeDefinition" Orientation="Orientation.Vertical" class="mb-5">
+    <Items>
+        @foreach (var snake in _snakes)
+        {
+            <RadzenCheckBoxListItem Text="@($"{snake.Name} ({snake.Url})")" Value="snake" />
+        }
+    </Items>
+</RadzenCheckBoxList>
+<em>Hadi se definují v souboru snakes.json</em>
+
+@code {
+    private IEnumerable<SnakeDefinition> _selectedSnakes = default!;
+    private IReadOnlyList<SnakeDefinition> _snakes = default!;
+
+    [Parameter]
+    public required IReadOnlyList<SnakeDefinition> SelectedSnakes { get; set; }
+
+    [Parameter]
+    public EventCallback<IReadOnlyList<SnakeDefinition>> SelectedSnakesChanged { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _snakes = Snakes.LoadSnakeDefinitions();
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        _selectedSnakes = SelectedSnakes;
+    }
+
+    private async Task OnSelectedSnakesChanged()
+    {
+        await SelectedSnakesChanged.InvokeAsync(_selectedSnakes.ToArray());
+    }
+    
+}

@@ -1,0 +1,63 @@
+﻿@using BsSnake.Core
+@using BsSnake.Core.Model
+@using BsSnake.Contracts
+@using System.Text.Json
+@inject DialogService DialogService
+
+@if (_game == null)
+{
+    <RadzenPanel AllowCollapse Text="Výběr kola">
+        <GameChooser @bind-Value="_selectedGameSettings"/>
+    </RadzenPanel>
+    <br/>
+    <RadzenPanel AllowCollapse Text="Výběr hadů">
+        <SnakesChooser @bind-SelectedSnakes="_selectedSnakes"/>
+    </RadzenPanel>
+
+    <br/>
+}
+@if (_selectedGameSettings == null || _selectedSnakes.Count == 0)
+{
+    return;
+}
+
+@if (_game == null)
+{
+    <RadzenButton Click="CreateClicked" Text="Vytvořit hru" />
+}
+else if (_initializingGame)
+{
+    <text>Provádí se inicializace hry...</text>
+}
+else
+{
+    <GameControl Game="_game" NewGame="NewGame" />
+}
+                                              
+@code
+{
+    private IReadOnlyList<SnakeDefinition> _selectedSnakes = Array.Empty<SnakeDefinition>();
+    private GameSettings? _selectedGameSettings;
+    private Game? _game;
+    private bool _initializingGame;
+
+    private async Task CreateClicked()
+    {
+        if (_selectedGameSettings == null)
+        {
+            await DialogService.Alert("Vyberte nastavení hry");
+            return;
+        }
+
+        _game = new Game(_selectedGameSettings, _selectedSnakes);
+        _initializingGame = true;
+        await _game.InitAsync();
+        _initializingGame = false;
+        StateHasChanged();
+    }
+
+    private void NewGame()
+    {
+        _game = null;
+    }
+}

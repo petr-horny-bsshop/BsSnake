@@ -1,0 +1,120 @@
+﻿@using BsSnake.Contracts
+@using BsSnake.Core.Model
+
+@inject DialogService DialogService
+
+<RadzenRow Gap="1rem">
+    <RadzenColumn Size="7">
+        <RadzenPanel Text="Hra">
+            <div style="display: grid; justify-items: center; grid-gap: 1em;">
+                <BoardView Board="@GetCurrentHistoryGame().Board" />
+                <div>
+                    <RadzenButton Text="Spustit" Click="StartClicked" Disabled="_isRunning || Game.Completed" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Primary" />
+                    <RadzenButton Text="Zastavit" Click="StopClicked" Disabled="!_isRunning || Game.Completed || Game.Iteration == 0" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Light" />
+                    <RadzenButton Text="Předchozí krok" Click="PreviousIterationClicked" Disabled="_isRunning || _displayedIteration <= 0" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Light" />
+                    <RadzenButton Text="Následující krok" Click="NextIterationClicked" Disabled="_isRunning || (Game.Completed && _displayedIteration >= Game.IterationHistory.Count-1)" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Light" />
+                    <RadzenButton Text="Opakovat request" Click="RepeatRequestClicked" Disabled="_isRunning" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Light" />
+                    <RadzenButton Text="Nová hra" Click="NewGameClicked" Disabled="_isRunning" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Danger" />
+                    Rychlost: <RadzenDropDown Data="_gameSpeedList" @bind-Value="_gameSpeed" Style="width: 5em; height: 2.25em;" />
+                </div>
+            </div>
+        </RadzenPanel>
+
+    </RadzenColumn>
+    <RadzenColumn Size="5">
+        <RadzenPanel Text="Stav hry">
+            <GameStatusView Game="GetCurrentHistoryGame()" />
+        </RadzenPanel>
+    </RadzenColumn>
+</RadzenRow>
+
+
+@code {
+    private bool _isRunning;
+    private int _displayedIteration = 0;
+    private int[] _gameSpeedList = { 1, 10, 100 };
+    private int _gameSpeed = 10;
+
+    [Parameter, EditorRequired]
+    public required Game Game { get; set; }
+
+    [Parameter]
+    public EventCallback NewGame { get; set; }
+
+    private GameDto GetCurrentHistoryGame()
+    {
+        return Game.IterationHistory[_displayedIteration];
+    }
+
+    private void StartClicked()
+    {
+        if (_isRunning) return;
+
+        _isRunning = true;
+
+
+#pragma warning disable CS4014 // toto je chtěné
+        GameLoop();
+#pragma warning restore CS4014
+    }
+
+    private async Task GameLoop()
+    {
+        while (_isRunning)
+        {
+            await Task.Delay(1000 / _gameSpeed);
+    
+            var canContinue = await CalculateNextIteration();
+            StateHasChanged();
+            if(!canContinue) break;
+        }
+        _isRunning = false;
+        if (Game.Completed)
+        {
+            await DialogService.Alert($"Hra dokončena - {Game.CompletedText}", "Hra dokončena");
+        }
+        StateHasChanged();
+    }
+
+    private async Task<bool> CalculateNextIteration()
+    {
+        var canContinue = await Game.MoveAsync();
+        _displayedIteration = Game.Iteration;
+        return canContinue;
+    }
+
+    private void StopClicked()
+    {
+        _isRunning = false;
+    }
+
+    private void PreviousIterationClicked()
+    {
+        if (_displayedIteration > 0) _displayedIteration--;
+    }
+
+    private async Task NextIterationClicked()
+    {
+        if (_displayedIteration >= Game.IterationHistory.Count - 1)
+        {
+            await CalculateNextIteration();
+        }
+        else
+        {
+            _displayedIteration++;
+        }
+    }
+
+    private async Task NewGameClicked()
+    {
+        var confirmed = await DialogService.Confirm("Opravdu chcete vytvořit novou hru?", "Nová hra", options: new ConfirmOptions { OkButtonText = "Ano", CancelButtonText = "Ne" });
+        if (confirmed != true) return;
+        _isRunning = false;
+        await NewGame.InvokeAsync();
+    }
+
+    private async Task RepeatRequestClicked()
+    {
+        await Game.SimulateRequestAsync(_displayedIteration);
+    }
+}

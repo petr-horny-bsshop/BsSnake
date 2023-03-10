@@ -1,0 +1,46 @@
+﻿@using BsSnake.Core.Model
+<RadzenDropDown Data="_gameSettings" @bind-Value="Value" @bind-Value:after="AfterValueChanged" TextProperty="@nameof(GameSettings.Name)" />
+<br />
+<br />
+
+@if (Value != null)
+{
+    <div>Název: @Value.Name</div>
+    <div>Hrací plocha: @Value.BoardWidth x @Value.BoardHeight</div>
+    <div>Počáteční energie hadů: @Value.StartingEnergy</div>
+    <div>Energie získaná z potravy: @Value.FoodEnergy</div>
+    <div>Pravděpodobnost vzniku potravy: @Value.FoodProbability.ToString("p0")</div>
+    <div>Pravděpodobnost vzniku překážky: @Value.ObstacleProbability.ToString("p0")</div>
+    <div>Maximální počet iterací: @(Value.MaximumIterations.HasValue ? Value.MaximumIterations : "neomezeno")</div>
+    <div>Průměrný povolený timeout: @Value.AverageTimeout ms</div>
+    <div>Maximální povolený timeout: @Value.MaximumTimeout ms</div>
+}
+<br />
+<em>Hry je možné upravit v souboru games.json. <a @onclick="CreateDefaultGamesJson" href="">Vytvořit výchozí games.json</a></em>
+
+@code {
+    private IReadOnlyCollection<GameSettings> _gameSettings = default!;
+
+    [Parameter]
+    public GameSettings? Value { get; set; }
+
+    [Parameter]
+    public EventCallback<GameSettings?> ValueChanged { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _gameSettings = GameSettings.Load();
+    }
+
+    private async Task AfterValueChanged()
+    {
+        await ValueChanged.InvokeAsync(Value);
+    }
+
+    private void CreateDefaultGamesJson()
+    {
+        _gameSettings = GameSettings.CreateAndSaveDefault();
+    }
+
+}

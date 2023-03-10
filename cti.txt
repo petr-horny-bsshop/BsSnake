@@ -1,0 +1,12 @@
+#INSTALACE
+Pro správnou funkci hlavní součásti je potřeba .NET 7.0.3 Runtime.
+Pro kompilaci ukázkového hada je potřeba .NET 7.0.3 SDK.
+
+#SPUŠTĚNÍ HLAVNÍ SOUČÁSTI
+Spustit dávku run-server.cmd. Spustí server hlavní součásti na adrese http://localhost:6001 (to je možné ovlivnit v souboru appsettings.json).
+V prohlížeči je pak možné aplikaci ovládat na adrese http://localhost:6001
+
+#KOMPILACE A SPUŠTĚNÍ UKÁZKOVÉHO HADA
+Ukázkový příklad hada je ve složce SnakeExample.
+Pomocí dávky build-and-run-snake.cmd je možné hada zkompilovat a spusit. Server hada se spustí na adrese http://localhost:6002, to je možné ovlivnit v souboru appsettings.json.
+Popřípadě je možné hada otevřít ve Visual Studiu.

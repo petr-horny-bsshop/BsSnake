@@ -1,0 +1,63 @@
+﻿@using BsSnake.Contracts
+@using BsSnake.Core.Model
+
+Iterace: @Game.Iteration
+<br />
+
+@*<div style="display: grid; grid-template-columns: auto auto auto;">
+    @foreach()
+    <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H5" Style="@($"color:{snake.Color}")">@(snake.Name)</RadzenText>
+    <div>Délka: @snake.Length</div>
+</div>*@
+
+@for (var snakeIndex=0; snakeIndex<_snakes.Count; snakeIndex++)
+{
+    var snake = _snakes[snakeIndex];
+    var scoreIndex = snakeIndex+1;
+    <RadzenCard @key="snake.Id" Style="padding: 0; margin: 5px;">
+        <RadzenRow Gap="0" Style="@(snake.Alive ? "" : "opacity:0.5")">
+            <RadzenColumn Size="1" Class="rz-p-4">
+                <RadzenText TextStyle="TextStyle.H2" TagName="TagName.H2" Style="@($"color:{snake.Color}")">@(scoreIndex).</RadzenText>
+            </RadzenColumn>
+            <RadzenColumn Size="6" Class="rz-p-4">
+                <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H5" Style="@($"color:{snake.Color}")">@(snake.Name)</RadzenText>
+                <br />
+                @snake.Url
+            </RadzenColumn>
+            <RadzenColumn Size="3" Class="rz-p-4">
+                Délka: @snake.Length <br />
+                Energie: @snake.Energy
+            </RadzenColumn>
+            <RadzenColumn Size="2" Class="rz-p-4">
+                Latence: @snake.Latency ms
+            </RadzenColumn>
+        </RadzenRow>
+        @if (!snake.Alive)
+        {
+            <RadzenRow Gap="0">
+                <RadzenColumn Size="12" Class="rz-p-4">
+                    Smrt v @snake.DeathIteration. iteraci
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow Gap="0">
+                <RadzenColumn Size="12" Class="rz-p-4" >
+                    Příčina smrti: <span style="color:red;">@snake.DeathCause</span>
+                </RadzenColumn>
+            </RadzenRow>
+        }
+    </RadzenCard>
+}
+
+@code {
+    private IReadOnlyList<SnakeDto> _snakes = default!;
+
+    [Parameter, EditorRequired]
+    public required GameDto Game { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        _snakes = Game.Board.Snakes.OrderByDescending(s => s.Alive).ThenByDescending(s => s.DeathIteration.GetValueOrDefault(int.MaxValue)).ThenByDescending(s => s.Length).ToArray();
+    }
+
+}
