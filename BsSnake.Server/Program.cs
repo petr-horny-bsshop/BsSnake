@@ -10,7 +10,13 @@ namespace BsSnake.Server
 
             // Add services to the container.
             builder.Services.AddRazorPages();
-            builder.Services.AddServerSideBlazor();
+            builder.Services.AddServerSideBlazor(options =>
+            {
+                options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(15); // výchozí jsou 3 minuty
+                options.DisconnectedCircuitMaxRetained = 100; // výchozí je 100
+                options.JSInteropDefaultCallTimeout = TimeSpan.FromMinutes(1); // výchozí je 1 minuta
+                options.DetailedErrors = true;
+            });
             builder.Services.AddScoped<DialogService>();
             builder.Services.AddScoped<NotificationService>();
             builder.Services.AddScoped<TooltipService>();
