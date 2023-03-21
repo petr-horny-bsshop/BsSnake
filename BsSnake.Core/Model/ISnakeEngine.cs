@@ -15,6 +15,6 @@ namespace BsSnake.Core.Model
         /// <summary>
         /// Zeptá se hada, kterým směrem má pohnout.
         /// </summary>
-        Task<Direction> MoveAsync(GameDto game, CancellationToken cancellationToken);
+        Task<ResponseDto> MoveAsync(GameDto game, CancellationToken cancellationToken);
     }
 }

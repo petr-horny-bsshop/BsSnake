@@ -3,7 +3,7 @@ Pro správnou funkci hlavní součásti je potřeba .NET 7.0.3 Runtime.
 Pro kompilaci ukázkového hada je potřeba .NET 7.0.3 SDK.
 
 #SPUŠTĚNÍ HLAVNÍ SOUČÁSTI
-Spustit dávku run-server.cmd. Spustí server hlavní součásti na adrese http://localhost:6001 (to je možné ovlivnit v souboru appsettings.json).
+Spustit dávku buld-and-run-server.cmd. Spustí server hlavní součásti na adrese http://localhost:6001 (to je možné ovlivnit v souboru appsettings.json).
 V prohlížeči je pak možné aplikaci ovládat na adrese http://localhost:6001
 
 #KOMPILACE A SPUŠTĚNÍ UKÁZKOVÉHO HADA

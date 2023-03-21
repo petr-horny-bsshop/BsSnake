@@ -21,7 +21,7 @@ namespace BsSnake.SnakeExample
 
                 var direction = directions[Random.Shared.Next(0, directions.Length)];
 
-                return Results.Ok(direction);
+                return Results.Ok(new ResponseDto { Direction = direction });
             }); 
 
             app.Run();

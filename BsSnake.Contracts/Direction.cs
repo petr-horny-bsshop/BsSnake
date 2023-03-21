@@ -1,8 +1,11 @@
-﻿namespace BsSnake.Contracts;
+﻿using System.Text.Json.Serialization;
+
+namespace BsSnake.Contracts;
 
 /// <summary>
 /// Směr hada.
 /// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum Direction
 {
     /// <summary>

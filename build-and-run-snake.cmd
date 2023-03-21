@@ -1,3 +1,4 @@
-dotnet build .\SnakeExample
-cd SnakeExample\bin\debug\net7.0\
+cd BsSnake.SnakeExample
+dotnet build
+cd bin\debug\net7.0
 BsSnake.SnakeExample.exe

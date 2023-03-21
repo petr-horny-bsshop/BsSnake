@@ -9,7 +9,7 @@ namespace BsSnake.Core.SnakeEngines
     public class SimpleSnakeEngine : ISnakeEngine
     {
         /// <inheritdoc />
-        public Task<Direction> MoveAsync(GameDto status, CancellationToken cancellationToken)
+        public Task<ResponseDto> MoveAsync(GameDto status, CancellationToken cancellationToken)
         {
             var allowedDirections = new HashSet<Direction>
             {
@@ -52,10 +52,10 @@ namespace BsSnake.Core.SnakeEngines
             }
 
             var preferredDirection = DecideDirection2(status);
-            if (allowedDirections.Contains(preferredDirection)) return Task.FromResult(preferredDirection);
+            if (allowedDirections.Contains(preferredDirection)) return Task.FromResult(new ResponseDto {Direction = preferredDirection});
 
             var result = allowedDirections.OrderByDescending(d => DistanceToMyBody(status, d)).FirstOrDefault();
-            return Task.FromResult(result);
+            return Task.FromResult(new ResponseDto { Direction = result });
         }
 
         /// <inheritdoc />

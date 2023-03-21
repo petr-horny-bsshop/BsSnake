@@ -1,6 +1,89 @@
 ﻿@page "/Documentation"
-<h3>Dokumentace</h3>
-<h4>Ukázka JSON requestu</h4>
+<h1>Dokumentace</h1>
+<h2>Základní princip hry</h2>
+<p>
+    Každý had funguje jako samostatný http server. V každé iteraci hry je na http server hada (dále jen hada) poslán POST request na adresu /move.
+    V POST datech je stav hry serializovaný do JSONu. Odpověď hada je směr (Up, Down, Left, Right), kterým se má v dané iteraci vydat.
+    Před začátkem hry, je na hada poslán POST request na adresu /init s počátečním stavem hry. Had odpovídá pouze stavovým kódem 200.
+</p>
+
+<h2>Základní pravidla/vlastnosti hry</h2>
+<ul>
+    <li>Pokud hlava hada narazí (pozice hlavy je stejná jako pozice jídla) na jídlo, bude v další iteraci o jeden článek delší a získá určité množství energie, které je dáno parametry hry.</li>
+    <li>Pokud hlava hada narazí na překážku (pozice hlavy je stejná jako pozice překážky), had zemře.</li>
+    <li>Pokud hlava hada narazí do svého těla nebo do těla jiného živého hada (pozice hlavy je stejná jako pozice libovolného článku hada), had zemře.</li>
+    <li>Pokud hlava hada narazí do hlavy jiného živého hada, zemřou oba dva hadi.</li>
+    <li>Do mrtvého hada není možné narazit.</li>
+    <li>V každé iteraci klesne energie hada o 1.</li>
+    <li>Pokud klesne energie hada na 0, had zemře.</li>
+    <li>Pokud had vyjede mimo hrací plochu, zemře.</li>
+    <li>Had bez těla se může pohybovat vždy všemi směry.</li>
+    <li>Pokud má had tělo a pohybuje se například doprava, nic nebrání tomu, aby v další iteraci změnil směr doleva. Pokud toto však udělá, tak zemře.</li>
+    <li>Had, který zemře se již neúčastní hry, tj. nejsou na něj odesílány další požadavky.</li>
+</ul>
+
+
+
+<h2>Hrací plocha</h2>
+<p>
+    Pozice na hrací ploše je určena celočíselnými souřadnicemi x a y. Každé pozici odpovídá jeden čtvereček. Pozice (0,0) je v levém spodním rohu.
+    <img src="hraci-plocha.png"/>
+</p>
+
+<h2>Ovládání hry</h2>
+<p>
+    <img src="ovladaci-panel.png" />
+    <ul>
+        <li><em>Spustit</em> - spustí hru.</li>
+        <li><em>Zastavit</em> - zastaví hru.</li>
+        <li><em>Předchozí krok</em> - umožní zobrazit stav hry v předchozích iteracích.</li>
+        <li><em>Následující krok</em> - provede další iteraci anebo se posune v historii směrem vpřed.</li>
+        <li><em>Opakovat request</em> - znovu odešle na všechny hady request se stavem hry v aktuálně zobrazené iteraci. Odpověď hada je však zahozena. Určeno k ladění hadů.</li>
+        <li><em>Nová hra</em> - ukončí aktuální hru.</li>
+    </ul>
+</p>
+
+<h2>Struktura objektu popisující stav hry</h2>
+<ul><em>root (kořenový objekt)</em>
+    <ul>
+        <li>
+            <em>board (objekt)</em> - Informace o hrací ploše.
+            <ul>
+                <li><em>width (celé číslo)</em> - Šířka hrací plochy (počet kostiček).</li>
+                <li><em>height (celé číslo)</em> - Výška hrací plochy (počet kostiček).</li>
+                <li><em>food (pole objektů typu Coordinate)</em> - Informace o políčkách s jídlem. V každém prvku pole je souřadnice jednoho jídla. Pokud je na hrací ploše 5 kusů jídel, bude zde 5 prvků.</li>
+                <li><em>obstacles (pole souřadnic)</em> - Informace o políčkách s překážkami. V každém prvku pole je souřadnice jedné překážky. Pokud je na hrací ploše 5 překážek, bude zde 5 prvků.</li>
+                <li><em>snakes (pole objektů typu Snake)</em> - Informace o všech hadech na hrací ploše. Jsou zde i hadi, kteří již zemřeli. Je zde i had aktuálního hráče.</li>
+            </ul>
+        </li>
+        <li><em>you (objekt typu Snake)</em> - Informace o hadu hráče.</li>
+        <li><em>iteration (celé číslo)</em> - Aktuální iterace hry.</li>
+    </ul>
+</ul>
+
+<b>Struktura objektu Coordinate</b>
+<ul>
+    <li><em>x (celé číslo)</em> - Pozice x. Počítáno od 0.</li>
+    <li><em>y (celé číslo)</em> - Pozice y. Počítáno od 0.</li>
+</ul>
+
+<b>Struktura objektu Snake</b>
+<ul>
+    <li><em>id (řetězec)</em> - Jedinečný identifikátor hada v rámci hry.</li>
+    <li><em>name (řetězec)</em> - Název hry.</li>
+    <li><em>url (řetězec)</em> - Bázová url adresa http serveru hada.</li>
+    <li><em>head (objekt typu Coordinate)</em> - Pozice hlavy hada.</li>
+    <li><em>body (pole objektů typu Coordinate)</em> - Pozice jednotlivých článků těla kromě hlavy. Pořadí prvků v poli není nijak definováno, tzn. není zaručeno, že na 0. prvku bude pozice článku těla hned za hlavou.</li>
+    <li><em>length (celé číslo)</em> - Délka hada včetně hlavy. Had bez těla, tj. pouze s hlavou má délku 1.</li>
+    <li><em>energy (celé číslo)</em> - Energie hada. V každé iteraci se energie snižuje o 1.</li>
+    <li><em>alive (boolean)</em> - Zda je had naživu.</li>
+    <li><em>color (řetězec)</em> - Barva hada v html formátu.</li>
+    <li><em>latency (celé číslo)</em> - Průměrná latence hada. Pokud latence překročí určitou mez bude had zabit.</li>
+    <li><em>deathCause (řetězec)</em> - Příčina smrti hada.</li>
+    <li><em>deathIteration (nullable celé číslo)</em> - Iterace, ve které had zemřel.</li>
+</ul>
+
+<h2>Ukázka JSON požadavku</h2>
 <pre>
 <code>
 {
@@ -66,13 +149,36 @@
         "deathCause": null,
         "deathIteration": null
       }
-    ]
+    ],
+    "you" : {
+        "id": "f4a8d523-4057-48a7-b1dd-c827b4dbc82f",
+        "name": "BsSnake0",
+        "url": "http://localhost:6001/snake/0/",
+        "head": {
+          "x": 7,
+          "y": 6
+        },
+        "body": [],
+        "length": 1,
+        "energy": 78,
+        "alive": true,
+        "color": "#ff0000",
+        "latency": 24,
+        "deathCause": null,
+        "deathIteration": null
+      },
   },
-  "iterations": 22
+  "iteration": 22
 }
 </code>
 </pre>
 
-@code {
 
+<h2>Ukázka JSON odpovědi</h2>
+<pre>
+<code>
+{
+    "direction":"Down"
 }
+</code>
+</pre>

@@ -1,10 +1,10 @@
 [
   {
     "name": "Ukázkový had #1",
-    "url": "http://localhost:6002/"
+    "url": "http://localhost:6001/snake/1"
   },
   {
     "name": "Ukázkový had #2",
-    "url": "http://localhost:6002/"
+    "url": "http://localhost:6001/snake/0"
   }  
 ]

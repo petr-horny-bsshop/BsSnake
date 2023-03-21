@@ -23,13 +23,20 @@ namespace BsSnake.Core.SnakeEngines
             await httpClient.PostAsync(url, content, cancellationToken);
         }
 
-        public async Task<Direction> MoveAsync(GameDto game, CancellationToken cancellationToken)
+        public async Task<ResponseDto> MoveAsync(GameDto game, CancellationToken cancellationToken)
         {
             using var httpClient = new HttpClient();
             var content = JsonContent.Create(game);
             var url = _url.TrimEnd('/') + "/move";
             var response = await httpClient.PostAsync(url, content, cancellationToken);
-            var result = await response.Content.ReadFromJsonAsync<Direction>(cancellationToken: cancellationToken);
+           
+            var result = await response.Content.ReadFromJsonAsync<ResponseDto?>(cancellationToken: cancellationToken);
+            if (result == null)
+            {
+                var rawResponse = await response.Content.ReadAsStringAsync(cancellationToken);
+                throw new Exception($"Neplatná odpověď od hada: '{rawResponse}'");
+            }
+
             return result;
         }
     }

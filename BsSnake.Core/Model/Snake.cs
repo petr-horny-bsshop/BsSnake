@@ -120,7 +120,7 @@ public class Snake
     public async Task MoveAsync(Game game, CancellationToken cancellationToken)
     {
         var gameDto = game.GetDto(this);
-        var direction = await _engine.MoveAsync(gameDto, cancellationToken);
+        var response = await _engine.MoveAsync(gameDto, cancellationToken);
 
         var hasBody = _body.Count > 0;
 
@@ -139,7 +139,7 @@ public class Snake
             }
         }
 
-        Head = Head.Move(direction);
+        Head = Head.Move(response.Direction);
 
         Energy--;
     }
@@ -150,8 +150,8 @@ public class Snake
     /// </summary>
     public async Task<Direction> SimulateMoveAsync(GameDto game, CancellationToken cancellationToken)
     {
-        var direction = await _engine.MoveAsync(game, cancellationToken);
-        return direction;
+        var response = await _engine.MoveAsync(game, cancellationToken);
+        return response.Direction;
     }
 
     /// <summary>
