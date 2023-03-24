@@ -20,7 +20,7 @@ public class Game
         "#ff00ff",
         "#00ffff",
         "#000000",
-        "#ffffff"
+        "#ff6000"
         };
 
     /// <summary>

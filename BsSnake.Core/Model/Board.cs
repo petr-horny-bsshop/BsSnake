@@ -131,6 +131,7 @@ public class Board
         }
 
         if (Food.Any(f => f == coordinate)) return false;
+        if (Obstacles.Any(f => f == coordinate)) return false;
         return true;
     }
 

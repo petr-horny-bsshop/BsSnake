@@ -16,23 +16,24 @@
     "boardWidth": 12,
     "boardHeight": 12,
     "foodProbability": 0.1,
-    "obstacleProbability": 0.1,
+    "obstacleProbability": 0.025,
     "averageTimeout": 1000,
     "maximumTimeout": 10000,
-    "maximumIterations": 500,
+    "maximumIterations": 1000,
     "startingEnergy": 100,
     "energyIncrease": 10
   },
   {
     "name": "3. kolo",
-    "boardWidth": 12,
-    "boardHeight": 12,
-    "foodProbability": 0.1,
-    "obstacleProbability": 0.1,
+    "boardWidth": 24,
+    "boardHeight": 24,
+    "foodProbability": 0.5,
+    "obstacleProbability": 0.05,
     "averageTimeout": 1000,
     "maximumTimeout": 10000,
     "maximumIterations": 5000,
     "startingEnergy": 100,
-    "energyIncrease": 10
+    "energyIncrease": 5
+
   }
 ]

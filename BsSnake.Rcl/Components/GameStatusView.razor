@@ -57,7 +57,7 @@ Iterace: @Game.Iteration
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        _snakes = Game.Board.Snakes.OrderByDescending(s => s.Alive).ThenByDescending(s => s.DeathIteration.GetValueOrDefault(int.MaxValue)).ThenByDescending(s => s.Length).ToArray();
+        _snakes = Game.Board.Snakes.OrderByDescending(s => s.Length).ThenByDescending(s => s.DeathIteration.GetValueOrDefault(int.MaxValue)).ThenByDescending(s => s.Alive).ToArray();
     }
 
 }
